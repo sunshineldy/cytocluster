@@ -46,6 +46,7 @@ public class Cluster {
 	private Long edge;
 	private int flag;
 	
+//	private double modularity2;
 	
 	public Cluster(){
 		this.inDegree=0;
@@ -293,5 +294,14 @@ public class Cluster {
 	public void addnode(Long suid){
 		this.alNodes.add(suid);
 	}
-	
+
+/*	public double getModularity2() {
+		return modularity2;
+	}
+
+	public void setModularity2(double modularity2) {
+		this.modularity2 = modularity2;
+	}
+
+*/	
 }

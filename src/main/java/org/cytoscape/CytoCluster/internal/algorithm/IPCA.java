@@ -37,6 +37,9 @@ class Node{
 	}
 }
 
+
+
+
 class SortNodesComparator implements Comparator {
 	@Override
 	public int compare( Object a, Object b ){
@@ -45,10 +48,10 @@ class SortNodesComparator implements Comparator {
         if(i.weight > j.weight )
             return -1;
         
-       if((i.weight == j.weight)&&(i.name.compareTo(j.name) < 0))
+  /*     if((i.weight == j.weight)&&(i.name.compareTo(j.name) < 0))
         	return -1;
-        return 1;
- /*       else if(j.weight > i.weight  ){
+        return 1;*/
+        else if(j.weight > i.weight  ){
             return 1;
         }
         else {
@@ -62,7 +65,7 @@ class SortNodesComparator implements Comparator {
             else {
             	return 0;
             }         	
-        }*/
+        }
     }	
 }	
 
@@ -77,7 +80,7 @@ public class IPCA extends Algorithm{
 	Stack Q;	
 	int sp;
 	double tin;
-	
+	//ArrayList<edgew> edgeweight = new  ArrayList<edgew>();
 
 	public IPCA(Long networkID,ClusterUtil clusterUtil){
 		super(networkID, clusterUtil);
@@ -104,8 +107,9 @@ public ArrayList<Node> calNodeWeight(){
 		int weight = 0;
 		Iterator adje = currentNetwork.getAdjacentEdgeList(cn, Type.ANY).iterator();
 		while(adje.hasNext()){
-			CyEdge e = (CyEdge) adje.next();
+			CyEdge e = (CyEdge) adje.next();      
 			int ew = super.getCommonNeighbors(e.getSource().getSUID(), e.getTarget().getSUID()).size();//weight of edge
+			//edgeweight.add(new edgew(e.getSource().getSUID(), e.getTarget().getSUID(), ew));
 			weight += ew;
 		}
 		
@@ -138,8 +142,9 @@ public ArrayList<Cluster> SelectedSeed(ArrayList<Node> sortedn){
 		/*select the topest one to  be seed */     
 		
 		Cluster newCluster = new Cluster(i);	
+		System.out.println(i+"    "+sortedn.get(0).name+"    NNNNNNNN");
 		newCluster.addnode(sortedn.remove(0).suid);
-		ExtendingCluster(newCluster,0.5);
+		ExtendingCluster(newCluster,tin);
 			
 		/************remove all vertices in the cluster from the queue pq*******************/
 		Iterator n = newCluster.getALNodes().iterator();		
@@ -153,7 +158,7 @@ public ArrayList<Cluster> SelectedSeed(ArrayList<Node> sortedn){
 					j++;
 		}		
 		
-		Collections.sort(sortedn,new SortNodesComparator());
+	//	Collections.sort(sortedn,new SortNodesComparator());
 		i++;
 		alcluster.add(newCluster);		
 	}
@@ -186,22 +191,36 @@ public ArrayList<Map.Entry> getNeighborsMap(Cluster k){
 		}			
 	
 	/*****sorted by value*****/
-	ArrayList a = new ArrayList(neighborsmap.entrySet());
+	ArrayList<Map.Entry> a = new ArrayList(neighborsmap.entrySet());
 	Collections.sort(a, new Comparator() {
 		public int compare(Object o1, Object o2) {
 			Map.Entry obj1 = (Map.Entry) o1;
 			Map.Entry obj2 = (Map.Entry) o2;
 			if((Double)obj1.getValue() > (Double)obj2.getValue())
 				return -1;
-			else 
-				return 0;			
+			else if ((Double)obj1.getValue() < (Double)obj2.getValue())
+				return 1;
+			else
+				return 0;
 		}
 	});
+	
+	
+	for(Map.Entry m : a){
+		CyNode n = currentNetwork.getNode((Long) m.getKey());
+	
+		System.out.println("###  "+currentNetwork.getRow(n).get("name",String.class)+"   "+m.getValue());
+	}
+	
+	System.out.println("**********************************");
 	
 	return a;
 }
 
-	public void ExtendingCluster(Cluster k, double tinthreshold){
+
+
+
+/*	public void ExtendingCluster(Cluster k, double tinthreshold){
 		ArrayList<Map.Entry> neighborsmap = getNeighborsMap(k);
 		
 		while(!neighborsmap.isEmpty()){
@@ -215,6 +234,39 @@ public ArrayList<Map.Entry> getNeighborsMap(Cluster k){
 			
 		}		
 	
+	}
+	*/
+
+
+
+	public void ExtendingCluster(Cluster k, double tinthreshold){
+		ArrayList<Map.Entry> neighborsmap = getNeighborsMap(k);
+		int f ;
+	
+		while(true){
+			f = 0;
+			for(int i = 0 ; i < neighborsmap.size() ; i++){				
+				Map.Entry node = neighborsmap.get(i);		
+				double nodesnum = k.getALNodes().size();
+				if((Double)node.getValue() > tinthreshold * nodesnum )
+					if( SPJudgement( k, (Long)node.getKey()) ){
+						//k.addnode((Long)node.getKey());	
+						neighborsmap.remove(i);
+						neighborsmap = getNeighborsMap(k);
+						f = 1;
+						break;
+				}	
+			}
+			if(f == 0)
+				break;
+		}
+		
+		for(int i = 0; i < k.getALNodes().size(); i++){
+			CyNode n = currentNetwork.getNode((Long) k.getALNodes().get(i));
+			System.out.println("!!!  "+i+"   "+currentNetwork.getRow(n).get("name",String.class));
+		}
+			
+		
 	}
 
 /***************step 4**********************/
@@ -350,14 +402,14 @@ public ArrayList<Map.Entry> getNeighborsMap(Cluster k){
         
         for(int t=0; t<clusters.length; t++){
         
-        Iterator ii = clusters[t].getALNodes().iterator();
+   /*     Iterator ii = clusters[t].getALNodes().iterator();
         System.out.println("cluster "+t);
         int x=1;
         while(ii.hasNext()){
         	CyNode nn = inputNetwork.getNode((Long)ii.next());
         	System.out.println(x+"    "+inputNetwork.getRow(nn).get("name",String.class));
         	x++;
-        }
+        }*/
         }
         params.setAlgorithm("IPCA");
         return clusters;

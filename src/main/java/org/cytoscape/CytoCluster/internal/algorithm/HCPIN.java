@@ -408,17 +408,19 @@ public class HCPIN extends Algorithm{
     	int outDegree=totalDegree-2*inDegree;
     	if(outDegree<0)
     		System.err.println("Error outDegree!");
-    	double fModule = (double)2*inDegree/(double)(outDegree);
+    	//double fModule = (double)2*inDegree/(double)(outDegree);
+    	double fModule = (double)inDegree/(double)(outDegree);
     	if( fModule>params.getfThresholdHCPIN() )
     		c1.setModule(true);
     	c2.getALNodes().clear();
     	
+  //  	c1.setModularity2(fModule);
     	
     	Iterator y = alNodes.iterator();
-    	while(y.hasNext()){
-    		CyNode u = (CyNode)currentNetwork.getNode((Long)y.next());
-    		System.out.println("  $$$   "+currentNetwork.getRow(u).get("name", String.class));
-    	}
+    //	while(y.hasNext()){
+    //		CyNode u = (CyNode)currentNetwork.getNode((Long)y.next());
+    	//	System.out.println("  $$$   "+currentNetwork.getRow(u).get("name", String.class));
+   // 	}
     	
     	
     }
@@ -449,9 +451,11 @@ public class HCPIN extends Algorithm{
     		nodeTotalDegree=super.getNodeDegree(currentNetwork,nodeIndex);
     		//nodeTotalDegree=currentNetwork.getDegree(nodeIndex);
         	double fModule = (double)nodeInDegree/(double)(nodeTotalDegree);
-    		if(fModule<0.5)
+      //  	c1.setModularity2(fModule);
+        	if(fModule<0.5)
     			c1.setModule(false);
     	}
+    	
     }
     /**
      * merge overlapped complexes with weak module definition

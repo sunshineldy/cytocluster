@@ -41,12 +41,12 @@ public class VisualStyleAction extends AbstractVizAction
     if ((component instanceof ResultPanel)) {
     	ResultPanel resultsPanel = (ResultPanel)component;
 
-      double maxScore = resultsPanel.setNodeAttributesAndGetMaxScore();
+   //   double maxScore = resultsPanel.setNodeAttributesAndGetMaxScore();
 
       resultsPanel.selectCluster(null);
 
-      VisualStyle appStyle = this.mcodeUtil.getAppStyle(maxScore);
-
+     // VisualStyle appStyle = this.mcodeUtil.getAppStyle(maxScore);
+      VisualStyle appStyle = this.mcodeUtil.getAppStyle();
       this.mcodeUtil.registerVisualStyle(appStyle);
 
       CyNetworkView netView = resultsPanel.getNetworkView();

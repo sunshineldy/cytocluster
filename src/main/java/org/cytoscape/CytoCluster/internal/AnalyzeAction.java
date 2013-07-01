@@ -166,8 +166,24 @@ public class AnalyzeAction extends AbstractVizAction
         	JOptionPane.showMessageDialog(AnalyzeAction.this.swingApplication.getJFrame(),
             		interruptedMessage, "Interrupted", JOptionPane.WARNING_MESSAGE);
         else{  
+        	
+        	ArrayList de = this.clusterUtil.detectparalleledges(network);
+        	if(de.size()!=0){
+				if(JOptionPane.showConfirmDialog(this.swingApplication.getJFrame(),
+	            		"There are parallel edges or loops in the network! \n Do you still contine?", "WARNING", JOptionPane.YES_NO_OPTION) == 1)
+				{	this.clusterUtil.setSelected(de, network);
+					return ;}
+				else
+					this.clusterUtil.setSelected(de, network);
+				 
+			 }
+        	
         	final int resultId = this.clusterUtil.getCurrentResultId();
         	this.clusterUtil.getCurrentParameters().setParams(currentParamsCopy, resultId, network.getSUID());
+        	
+        	
+        	
+        	
         	
        /* 	if ((this.analyze == 0) || (isDirty(network)) || currentParamsCopy.getAlgorithm().equals(savedParamsCopy.getAlgorithm()) ||
         	          (currentParamsCopy.isIncludeLoops() != savedParamsCopy.isIncludeLoops()) || 

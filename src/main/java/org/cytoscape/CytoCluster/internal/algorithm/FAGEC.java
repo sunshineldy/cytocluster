@@ -284,7 +284,7 @@ public class FAGEC extends Algorithm{
     	int outDegree=totalDegree-2*inDegree;
     	if(outDegree<0)
     		System.err.println("Error outDegree!");
-    	float fModule = (float)2*inDegree/(float)(outDegree);
+    	float fModule = (float)inDegree/(float)(outDegree);
     	if( fModule>params.getfThresholdFAGEC() )
     		c1.setModule(true);
     	c2.getALNodes().clear();

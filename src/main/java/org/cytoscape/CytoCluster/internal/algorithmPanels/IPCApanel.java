@@ -115,7 +115,7 @@ public class IPCApanel extends JPanel{
         };
         ShortestPathLength.setColumns(3);
         ShortestPathLength.addPropertyChangeListener("value", new IPCApanel.FormattedTextFieldAction());
-        String tip3 = "largest length of a shortest path \n" +
+        String tip3 = "the largest length of a shortest path \n" +
                 "between a pair of vertices in cluster";
         ShortestPathLength.setToolTipText(tip3);
         ShortestPathLength.setText((new Integer(currentParameters.getShortestPathLength()).toString()));

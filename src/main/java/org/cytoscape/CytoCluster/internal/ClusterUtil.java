@@ -275,25 +275,45 @@ public class ClusterUtil {
 				try
 				{
 					java.awt.Dimension size = new java.awt.Dimension(width, height);
+				
 					JPanel panel = new JPanel();
+					
 					panel.setPreferredSize(size);
+					
 					panel.setSize(size);
+					
+			
 					panel.setMinimumSize(size);
+					
 					panel.setMaximumSize(size);
+					
 					panel.setBackground((java.awt.Color)vs.getDefaultValue(BasicVisualLexicon.NETWORK_BACKGROUND_PAINT));
+					
 					JWindow window = new JWindow();
+					
 					window.getContentPane().add(panel, "Center");
+					
 					RenderingEngine re = renderingEngineFactory.createRenderingEngine(panel, clusterView);
+					
 					vs.apply(clusterView);
+					
 					clusterView.fitContent();
+					
 					clusterView.updateView();
+					
 					window.pack();
+					
 					window.repaint();
+					
 					re.createImage(width, height);
-					re.printCanvas(g);
+			/**************************************************************************************/	
+					re.printCanvas(g);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!WRONG IN VERSION 3.1
+				
 					g.dispose();
 					if (clusterView.getNodeViews().size() > 0)
+						
 						cluster.setView(clusterView);
+						
 				}
 				catch (Exception ex)
 				{
@@ -339,12 +359,13 @@ public class ClusterUtil {
      * @param clusters   List of generated clusters
      * @return A sorted array of cluster objects based on cluster score.
      */
-    public static Cluster[] sortClusters(Cluster[] clusters) {
-        Arrays.sort(clusters, new Comparator() {
-            //sorting clusters by decreasing score
-            public int compare(Object o1, Object o2) {
+    public static List sortClusters(List<Cluster> clusterL) {
+    	Comparator c = new Comparator() {
+             public int compare(Object o1, Object o2) {
                 double d1 = ((Cluster) o1).getClusterScore();
                 double d2 = ((Cluster) o2).getClusterScore();
+                
+      //          System.out.println(d1+"  !!!!!!!!!!!!!!!!  "+d2);
                 if (d1 == d2) {
                     return 0;
                 } else if (d1 < d2) {
@@ -353,8 +374,10 @@ public class ClusterUtil {
                     return -1;
                 }
             }
-        });
-        return clusters;
+    	
+    	}; 	
+    	Collections.sort(clusterL,c);
+        return clusterL;
     }
 
     /**
@@ -363,12 +386,12 @@ public class ClusterUtil {
      * @param clusters   List of generated clusters
      * @return A sorted array of cluster objects based on cluster score.
      */
-    public static Cluster[] sortClusters2(Cluster[] clusters) {
-        Arrays.sort(clusters, new Comparator() {
+    public static List sortClusters2(List<Cluster> clusterL) {
+    	Comparator c = new Comparator() {
             //sorting clusters by decreasing score
             public int compare(Object o1, Object o2) {
-                double d1 = ((Cluster) o1).getALNodes().size();
-                double d2 = ((Cluster) o2).getALNodes().size();
+                double d1 = ((Cluster) o1).getNetwork().getNodeList().size();
+                double d2 = ((Cluster) o2).getNetwork().getNodeList().size();
                 if (d1 == d2) {
                     return 0;
                 } else if (d1 < d2) {
@@ -377,8 +400,9 @@ public class ClusterUtil {
                     return -1;
                 }
             }
-        });
-        return clusters;
+        };
+        Collections.sort(clusterL,c);
+        return clusterL;
     }
     /**
      * Converts a list of clusters to a list of networks that is sorted by modularity
@@ -386,8 +410,8 @@ public class ClusterUtil {
      * @param clusters   List of generated clusters
      * @return A sorted array of cluster objects based on cluster score.
      */
-    public static Cluster[] sortClusters3(Cluster[] clusters) {
-        Arrays.sort(clusters, new Comparator() {
+    public static List sortClusters3(List<Cluster> clusterL) {
+    	Comparator c = new Comparator() {
             //sorting clusters by decreasing score
             public int compare(Object o1, Object o2) {
                 double d1 = ((Cluster) o1).getModularity();
@@ -400,8 +424,9 @@ public class ClusterUtil {
                     return -1;
                 }
             }
-        });
-        return clusters;
+        };
+        Collections.sort(clusterL,c);
+        return clusterL;
     }
 
     /**
@@ -1032,7 +1057,8 @@ public class ClusterUtil {
     
     
     
-	  public VisualStyle getAppStyle(double maxScore) {
+	 // public VisualStyle getAppStyle(double maxScore) {
+	  public VisualStyle getAppStyle() {
 		    if (this.appStyle == null) {
 		      this.appStyle = this.visualStyleFactory.createVisualStyle("MCODE");
 
@@ -1065,7 +1091,7 @@ public class ClusterUtil {
 
 		    nodeColorCm.addPoint(Double.valueOf(0.0D), new BoundaryRangeValues(Color.WHITE, Color.WHITE, MIN_COLOR));
 
-		    nodeColorCm.addPoint(Double.valueOf(maxScore), new BoundaryRangeValues(MAX_COLOR, MAX_COLOR, MAX_COLOR));
+		  //  nodeColorCm.addPoint(Double.valueOf(maxScore), new BoundaryRangeValues(MAX_COLOR, MAX_COLOR, MAX_COLOR));
 
 		    this.appStyle.addVisualMappingFunction(nodeColorCm);
 
@@ -1099,6 +1125,40 @@ public class ClusterUtil {
 	    }
 
 	    return null;
+	  }
+	  
+	  
+	  public ArrayList detectparalleledges(CyNetwork n){
+		 List<CyEdge> edges = n.getEdgeList();
+		 Map<Long, Long> emap = new HashMap<Long, Long>(); 
+		 ArrayList e = new ArrayList();
+		 
+		 Iterator i = edges.iterator();
+		 while(i.hasNext()){
+			 CyEdge temp = (CyEdge) i.next();
+			 Long l = temp.getSource().getSUID() > temp.getTarget().getSUID() ? temp.getSource().getSUID() : temp.getTarget().getSUID();
+			 Long s = temp.getSource().getSUID() > temp.getTarget().getSUID() ? temp.getTarget().getSUID() : temp.getSource().getSUID();
+		//	 System.out.println(l+"    "+s+"  rrrrrrrrrRRRR");
+			 
+			 
+			 if((emap.containsKey(l) && emap.get(l).longValue() == s) || (l == s)){
+				 e.add(temp);
+				 if(l == s)
+					 e.add(n.getNode(l));
+				 else{
+					 e.add(n.getNode(l));
+					 e.add(n.getNode(s));
+				 }
+				 return e;
+			 }
+			 else
+				 emap.put(l, s);
+				
+		 	
+		 }
+		  
+		  
+		  return e;
 	  }
     
     

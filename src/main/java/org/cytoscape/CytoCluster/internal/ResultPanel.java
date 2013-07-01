@@ -1098,10 +1098,12 @@ public class ResultPanel extends JPanel {
 */
 
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -1128,12 +1130,14 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
@@ -1176,6 +1180,8 @@ import org.cytoscape.view.vizmap.VisualStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 public class ResultPanel extends JPanel
   implements CytoPanelComponent
 {
@@ -1214,12 +1220,57 @@ public class ResultPanel extends JPanel
     this.discardResultAction = discardResultAction;
     this.currentParamsCopy = mcodeUtil.getCurrentParameters().getResultParams(resultId);
     algname = currentParamsCopy.getAlgorithm();
-    System.out.println(algname+"NAME!!!!!!!!");
+    
     
     this.clusterBrowserPanel = new MCODEClusterBrowserPanel();
+    StringBuffer sb = new StringBuffer("Complex Browser( ");
+    sb.append(clusters.size());
+    sb.append(" in total )");
+    this.clusterBrowserPanel.setBorder(BorderFactory.createTitledBorder(sb.toString()));
+    
+    JPanel sortPanel = new JPanel();
+    sortPanel.setLayout(new FlowLayout());
+    boolean set3 = algname.equals(ParameterSet.MCODE);
+    boolean set2 = (algname.equals(ParameterSet.IPCA)) || (!this.currentParamsCopy.isWeakFAGEC()) || (!this.currentParamsCopy.isWeakHCPIN());
+   
+    boolean set1 = (!set2) && (!set3);
+    JRadioButton way1 = new JRadioButton("Size", set2);
+    JRadioButton way2 = new JRadioButton("Modularity", set1);
+    JRadioButton way3 = new JRadioButton("Score", set3);
+    
+    //JRadioButton way1 = new JRadioButton("Size");
+    //JRadioButton way2 = new JRadioButton("Modularity");
+    //JRadioButton way3 = new JRadioButton("Score");
+    way1.setActionCommand("size");
+    way2.setActionCommand("modu");
+    way3.setActionCommand("score");
+    
+    way1.addActionListener(new SortWayAction(this.clusterBrowserPanel.table, this.clusterBrowserPanel.browserModel));
+    way2.addActionListener(new SortWayAction(this.clusterBrowserPanel.table, this.clusterBrowserPanel.browserModel));
+    way3.addActionListener(new SortWayAction(this.clusterBrowserPanel.table, this.clusterBrowserPanel.browserModel));
+    ButtonGroup ways = new ButtonGroup();
+    ways.add(way1);
+    if (!algname.equals(ParameterSet.IPCA)) {
+    	ways.add(way2);
+    }
+    if (algname.equals(ParameterSet.MCODE)) {
+    	ways.add(way3);
+    }
+    JLabel label = new JLabel("Sort Complexes by (descend):"); 
+    sortPanel.add(label);
+    sortPanel.add(way1);
+    sortPanel.add(way2);
+    sortPanel.add(way3);
+    way3.setVisible(false);
+    if (this.currentParamsCopy.getAlgorithm().equals(ParameterSet.MCODE))
+         
+    	 way3.setVisible(true);
+         sortPanel.setToolTipText("Select a way to sort the complexes");
+         
+         add(sortPanel, "North");
+    
     add(this.clusterBrowserPanel, "Center");
     add(createBottomPanel(), "South");
-
     setSize(getMinimumSize());
     
   
@@ -1452,22 +1503,44 @@ public class ResultPanel extends JPanel
 
     details.append("Rank: ");
     details.append(String.valueOf(cluster.getRank() + 1));
-
-    if(algname.compareTo("MCODE")==0){
-    	details.append("\n");
-    	details.append("Score: ");
-    	NumberFormat nf = NumberFormat.getInstance();
-    	nf.setMaximumFractionDigits(3);
-    	details.append(nf.format(cluster.getClusterScore()));
-    }
     details.append("\n");
+
     details.append("Nodes: ");
     details.append(cluster.getNetwork().getNodeCount());
 
-    details.append("\n");
-    details.append("Edges: ");
+  
+    details.append("  Edges: ");
     details.append(cluster.getNetwork().getEdgeCount());
-
+    
+    details.append("\n");
+    if(algname.compareTo(ParameterSet.MCODE)==0){
+    	details.append("Score: ");
+    	NumberFormat nf = NumberFormat.getInstance();
+    	nf.setMaximumFractionDigits(3);
+    	details.append(nf.format(cluster.getClusterScore())+"  ");
+    }
+    
+    
+    if(algname.compareTo(ParameterSet.IPCA)!=0){
+    	details.append("Modularity: ");
+    	NumberFormat nf2 = NumberFormat.getInstance();
+    	nf2.setMaximumFractionDigits(3);
+    	details.append(nf2.format(cluster.getModularity()));
+    	
+    /*	if(algname.compareTo(ParameterSet.HCPIN)==0){
+        	details.append("Modularity2: ");
+        	NumberFormat nf3 = NumberFormat.getInstance();
+        	nf3.setMaximumFractionDigits(3);
+        	details.append(nf3.format(cluster.getModularity2()));
+    	}*/
+    	
+    	details.append("\n");
+    	details.append("InDeg: ");
+    	details.append(cluster.getInDegree());
+    	details.append(" OutDeg: ");
+    	int outDegree = cluster.getTotalDegree() - 2 * cluster.getInDegree();
+    	details.append(outDegree);
+    }
     return details;
   }
 
@@ -1800,22 +1873,24 @@ public class ResultPanel extends JPanel
   private class MCODEClusterBrowserTableModel extends AbstractTableModel
   {
     private final String[] columnNames = { "Network", "Details" };
-    private final Object[][] data;
+    private Object[][] data;
 
-    public MCODEClusterBrowserTableModel()
-    {
-      ResultPanel.this.exploreContent = new JPanel[ResultPanel.this.clusters.size()];
-      this.data = new Object[ResultPanel.this.clusters.size()][this.columnNames.length];
+    public MCODEClusterBrowserTableModel(){
+    	listIt();
+    }
+    public void listIt() {
+    	ResultPanel.this.exploreContent = new JPanel[ResultPanel.this.clusters.size()];
+    	this.data = new Object[ResultPanel.this.clusters.size()][this.columnNames.length];
 
-      for (int i = 0; i < ResultPanel.this.clusters.size(); i++) {
-        Cluster c = (Cluster)ResultPanel.this.clusters.get(i);
-        c.setRank(i);
-        StringBuffer details = ResultPanel.getClusterDetails(c);
-        this.data[i][1] = new StringBuffer(details);
+    	for (int i = 0; i < ResultPanel.this.clusters.size(); i++) {
+    		Cluster c = (Cluster)ResultPanel.this.clusters.get(i);
+    		c.setRank(i);
+    		StringBuffer details = ResultPanel.getClusterDetails(c);
+    		this.data[i][1] = new StringBuffer(details);
 
-        Image image = c.getImage();
-        this.data[i][0] = (image != null ? new ImageIcon(image) : new ImageIcon());
-      }
+    		Image image = c.getImage();
+    		this.data[i][0] = (image != null ? new ImageIcon(image) : new ImageIcon());
+    	}
     }
 
     public String getColumnName(int col)
@@ -2036,7 +2111,7 @@ public class ResultPanel extends JPanel
         ResultPanel.this.explorePanel.setTitleComponentText(title);
         ResultPanel.this.explorePanel.updateUI();
 
-        JComboBox nodeAttributesComboBox = (JComboBox)((JPanel)ResultPanel.this.exploreContent[selectedRow].getComponent(1))
+        JComboBox nodeAttributesComboBox = (JComboBox)((JPanel)ResultPanel.this.exploreContent[selectedRow].getComponent(0))
           .getComponent(0);
 
         nodeAttributesComboBox.setSelectedIndex(ResultPanel.this.enumerationSelection);
@@ -2108,6 +2183,59 @@ public class ResultPanel extends JPanel
       this.modelEnumerator.listIt(attributeEnumerations);
 
       ResultPanel.this.enumerationSelection = selectionIndex;
-    }
+    }  
   }
+  private class SortWayAction extends AbstractAction{
+       JTable browserTable;
+       ResultPanel.MCODEClusterBrowserTableModel modelBrowser;
+   
+       SortWayAction(JTable browserTable, ResultPanel.MCODEClusterBrowserTableModel modelBrowser){
+         this.browserTable = browserTable;
+         this.modelBrowser = modelBrowser;
+       }
+       public void actionPerformed(ActionEvent e) {
+         String way = e.getActionCommand();
+         ResultPanel.this.switchPlace(way);
+         System.out.println("5555555555555555555555555555555555555");  
+         
+         if (ResultPanel.this.clusters != null)
+         {
+           this.modelBrowser.listIt();
+           this.modelBrowser.fireTableDataChanged();
+           ResultPanel.this.clusterBrowserPanel.updateUI();
+           ((JPanel)ResultPanel.this.clusterBrowserPanel.getParent()).updateUI(); 
+           } else {
+           System.err.println("list null");
+         }
+       }
+     }
+  private void switchPlace(String field){
+       for (int i = 0; i < this.clusters.size() - 1; i++) {
+         int max = i;
+         for (int j = i + 1; j < this.clusters.size(); j++) {
+           if (field.equals("size")) {
+        	   System.out.println("size");  
+        	   if (((Cluster)this.clusters.get(j)).getNetwork().getNodeList().size() > ((Cluster)this.clusters.get(max)).getNetwork().getNodeList().size()){
+        		   max = j;
+             } 
+           }
+           else if (field.equals("modu")) {
+        	   if (((Cluster)this.clusters.get(j)).getModularity() > ((Cluster)this.clusters.get(max)).getModularity())
+        		   max = j;
+           } 
+           else if (field.equals("score")) {
+        	   System.out.println("score"); 
+        	   if (((Cluster)this.clusters.get(j)).getClusterScore() > ((Cluster)this.clusters.get(max)).getClusterScore())
+        		   max = j;
+           } 
+           else {
+             System.err.println("In switchPlace:Erro Parameter");
+             return;
+           }
+         }
+   
+         Collections.swap(this.clusters, i, max);
+       }
+     }
+  
 }

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 
 
 public class AnalyzeTask implements Task {
@@ -107,12 +109,12 @@ public class AnalyzeTask implements Task {
 				taskMonitor.setProgress(0.001D);
 				taskMonitor.setStatusMessage("Drawing Results (Step 3 of 3)");
 
-				this.clusterUtil.sortClusters(clusters);
+				this.clusterUtil.sortClusters(clusterL);
 				int imageSize = this.clusterUtil.getCurrentParameters()
 						.getResultParams(this.resultId).getDefaultRowHeight();
 				int count = 0;
 
-				for (Cluster c : clusters) {
+				for (Cluster c : clusterL) {
 					if (this.interrupted)
 						return;
 
@@ -148,17 +150,19 @@ public class AnalyzeTask implements Task {
 						.setStatusMessage("Step 3 of 3: Drawing the Result Network...");
 				// create all the images here for the clusters, it can be a time
 				// consuming operation
-				clusters = ClusterUtil.sortClusters2(clusters);
+				
 				
 				
 				for (int i = 0; i < clusters.length; i++)
 					clusterL.add(clusters[i]);
-
+				
+				clusterL = ClusterUtil.sortClusters2(clusterL);
+				
 				int imageSize = this.clusterUtil.getCurrentParameters()
 						.getResultParams(this.resultId).getDefaultRowHeight();
 				int count = 0;
 
-				for (Cluster c : clusters) {
+				for (Cluster c : clusterL) {
 					if (this.interrupted)
 						return;
 
@@ -208,11 +212,7 @@ public class AnalyzeTask implements Task {
 							.setStatusMessage("Step 3 of 3: Drawing the Result Network...");
 					// create all the images here for the clusters, it can be a
 					// time consuming operation
-					if (this.clusterUtil.getCurrentParameters()
-							.getResultParams(this.resultId).isWeakFAGEC())
-						clusters = ClusterUtil.sortClusters3(clusters);
-					else
-						clusters = ClusterUtil.sortClusters2(clusters);
+					
 
 					int imageSize = this.clusterUtil.getCurrentParameters()
 							.getResultParams(this.resultId)
@@ -222,10 +222,15 @@ public class AnalyzeTask implements Task {
 					for (int i = 0; i < clusters.length; i++)
 						clusterL.add(clusters[i]);
 					
+					if (this.clusterUtil.getCurrentParameters()
+							.getResultParams(this.resultId).isWeakFAGEC())
+						clusterL = ClusterUtil.sortClusters3(clusterL);
+					else
+						clusterL = ClusterUtil.sortClusters2(clusterL);
 					
 					int count = 0;
 
-					for (Cluster c : clusters) {
+					for (Cluster c : clusterL) {
 						if (this.interrupted)
 							return;
 
@@ -261,11 +266,7 @@ public class AnalyzeTask implements Task {
 							.setStatusMessage("Step 3 of 3: Drawing the Result Network...");
 					// create all the images here for the clusters, it can be a
 					// time consuming operation
-					if (this.clusterUtil.getCurrentParameters()
-							.getResultParams(this.resultId).isWeakFAGEC())
-						clusters = ClusterUtil.sortClusters3(clusters);
-					else
-						clusters = ClusterUtil.sortClusters2(clusters);
+					
 
 					int imageSize = this.clusterUtil.getCurrentParameters()
 							.getResultParams(this.resultId)
@@ -275,11 +276,16 @@ public class AnalyzeTask implements Task {
 					for (int i = 0; i < clusters.length; i++)
 						clusterL.add(clusters[i]);
 					
+					if (this.clusterUtil.getCurrentParameters()
+							.getResultParams(this.resultId).isWeakFAGEC())
+						clusterL = ClusterUtil.sortClusters3(clusterL);
+					else
+						clusterL = ClusterUtil.sortClusters2(clusterL);
 					
 					
 					int count = 0;
 
-					for (Cluster c : clusters) {
+					for (Cluster c : clusterL) {
 						if (this.interrupted)
 							return;
 
@@ -310,7 +316,8 @@ public class AnalyzeTask implements Task {
 						CyEdge e = (CyEdge)edges.next();
 						System.out.println(network.getRow(e).get("weight",Double.class));
 					}
-				 */					
+				 */		
+							
 						HCPIN algHcpin = (HCPIN) alg;
 
 						algHcpin.setTaskMonitor(taskMonitor, network.getSUID());
@@ -328,12 +335,7 @@ public class AnalyzeTask implements Task {
 								.setStatusMessage("Step 3 of 3: Drawing the Result Network...");
 						// create all the images here for the clusters, it can be a
 						// time consuming operation
-						if (this.clusterUtil.getCurrentParameters()
-								.getResultParams(this.resultId).isWeakHCPIN())
-							clusters = ClusterUtil.sortClusters3(clusters);
-						else
-							clusters = ClusterUtil.sortClusters2(clusters);
-
+						
 						int imageSize = this.clusterUtil.getCurrentParameters()
 								.getResultParams(this.resultId)
 								.getDefaultRowHeight();
@@ -342,11 +344,17 @@ public class AnalyzeTask implements Task {
 						for (int i = 0; i < clusters.length; i++)
 							clusterL.add(clusters[i]);
 						
+						if (this.clusterUtil.getCurrentParameters()
+								.getResultParams(this.resultId).isWeakHCPIN())
+							clusterL = ClusterUtil.sortClusters3(clusterL);
+						else
+							clusterL = ClusterUtil.sortClusters2(clusterL);
+
 						
 						
 						int count = 0;
 
-						for (Cluster c : clusters) {
+						for (Cluster c : clusterL) {
 							if (this.interrupted)
 								return;
 
@@ -393,7 +401,7 @@ public class AnalyzeTask implements Task {
 					//			.getResultParams(this.resultId).isWeakFAGEC())
 					//		clusters = ClusterUtil.sortClusters3(clusters);
 					//	else
-							clusters = ClusterUtil.sortClusters2(clusters);
+							
 
 						int imageSize = this.clusterUtil.getCurrentParameters()
 								.getResultParams(this.resultId)
@@ -403,11 +411,12 @@ public class AnalyzeTask implements Task {
 						for (int i = 0; i < clusters.length; i++)
 							clusterL.add(clusters[i]);
 						
+						clusterL = ClusterUtil.sortClusters2(clusterL);
 						
 						
 						int count = 0;
 
-						for (Cluster c : clusters) {
+						for (Cluster c : clusterL) {
 							if (this.interrupted)
 								return;
 
@@ -460,7 +469,7 @@ public class AnalyzeTask implements Task {
 								//			.getResultParams(this.resultId).isWeakFAGEC())
 								//		clusters = ClusterUtil.sortClusters3(clusters);
 							//		else
-										clusters = ClusterUtil.sortClusters2(clusters);
+										
 
 									int imageSize = this.clusterUtil.getCurrentParameters()
 											.getResultParams(this.resultId)
@@ -470,6 +479,7 @@ public class AnalyzeTask implements Task {
 									for (int i = 0; i < clusters.length; i++)
 										clusterL.add(clusters[i]);
 									
+									clusterL = ClusterUtil.sortClusters2(clusterL);
 									
 									
 									int count = 0;

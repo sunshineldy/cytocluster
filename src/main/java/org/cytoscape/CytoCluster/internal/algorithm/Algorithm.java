@@ -595,7 +595,7 @@ public abstract class Algorithm {
                           }
                           currentCluster = new Cluster();
                           currentCluster.setALNodes(alNodes);
-                          System.out.println(alNodes.size()+"%%%%%%%%%%%%%%");
+                  //        System.out.println(alNodes.size()+"%%%%%%%%%%%%%%");
                           
                           currentCluster.setSeedNode(currentNode);
                           clusterGraph = createClusterGraph(alNodes, inputNetwork);
@@ -883,10 +883,10 @@ public abstract class Algorithm {
         }*/
     	
     	Set nodes = new HashSet();
-    	 System.out.println("******************************");
+   // 	 System.out.println("******************************");
         for (Long id : alNode) {
           CyNode n = inputNetwork.getNode(id);
-          System.out.println(inputNetwork.getRow(n).get("name",String.class));
+    //      System.out.println(inputNetwork.getRow(n).get("name",String.class));
           nodes.add(n);
         }
         ClusterGraph clusterGraph = clusterUtil.createGraph(inputNetwork, nodes);
@@ -908,9 +908,9 @@ public abstract class Algorithm {
         density = calcDensity(cluster, this.params.isIncludeLoops());
         score = density * numNodes;
 
-        System.out.println(score+"@@@@@@@@@@@@@@");
-        System.out.println(numNodes+"nnnnnnnn");
-        System.out.println(density+"ddddddddd");
+   //     System.out.println(score+"@@@@@@@@@@@@@@");
+    //    System.out.println(numNodes+"nnnnnnnn");
+   //     System.out.println(density+"ddddddddd");
         
         
         
@@ -929,7 +929,7 @@ public abstract class Algorithm {
      */
     private ArrayList getClusterCore(Long seedNode, HashMap nodeSeenHashMap, double nodeScoreCutoff, int maxDepthFromStart, HashMap nodeInfoHashMap) {
         ArrayList cluster = new ArrayList(); //stores Integer nodeIndices
-        System.out.println(nodeScoreCutoff+"hahahahaha");
+   //     System.out.println(nodeScoreCutoff+"hahahahaha");
         
         getClusterCoreInternal(seedNode,((NodeInfo) nodeInfoHashMap.get(seedNode)).score, 
         		nodeSeenHashMap,1, cluster, nodeScoreCutoff, maxDepthFromStart, nodeInfoHashMap);
@@ -1099,10 +1099,10 @@ public abstract class Algorithm {
           double density = possibleEdgeNum != 0 ? n : 0.0D;
           
           
-          System.out.println("nodeCount: "+ nodeCount);
-          System.out.println("actualEdgeNum: "+ actualEdgeNum);
-          System.out.println("possibleEdgeNum: "+ possibleEdgeNum);
-          System.out.println("density: "+ density);
+   //       System.out.println("nodeCount: "+ nodeCount);
+   //       System.out.println("actualEdgeNum: "+ actualEdgeNum);
+   //       System.out.println("possibleEdgeNum: "+ possibleEdgeNum);
+    //      System.out.println("density: "+ density);
           
           return density;
           
