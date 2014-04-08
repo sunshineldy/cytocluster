@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<properties>
 		<bundle.symbolicName>CytoCluster</bundle.symbolicName>
@@ -8,10 +9,10 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cytoscape.MyCytoApps</groupId>
-	
+
 	<artifactId>CytoCluster</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
-	
+	<version>1.4.1-SNAPSHOT</version>
+
 	<packaging>bundle</packaging>
 
 	<build>
@@ -70,13 +71,13 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-												<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}</Export-Package>
 						<Private-Package>${bundle.namespace}.internal.*</Private-Package>
-						
+
 						<Bundle-Activator>${bundle.namespace}.internal.CyActivator</Bundle-Activator>
-											</instructions>
+					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -87,6 +88,7 @@
 		<repository>
 			<id>cytoscape_snapshots</id>
 			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 			<releases>
 				<enabled>false</enabled>
@@ -100,11 +102,67 @@
 				<enabled>false</enabled>
 			</snapshots>
 			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<name>Cytoscape 
+		Releases</name>
+			<url>http://code.cytoscape.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>cytoscape_thirdparty</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<name>OSGi Bundle 
+		Wrapper</name>
+			<url>http://grid.sonatype.org:9000/nexus/content/repositories/central/</url>
+		</repository>
+		<repository>
+			<id>codehausSnapshots</id>
+			<name>Codehaus Snapshots</name>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<url>http://snapshots.maven.codehaus.org/maven2</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
+	<!-- pluginRepositories -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>cytoscape_snapshots</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<name>Cytoscape Snapshots</name>
+			<url>http://code.cytoscape.org/nexus/content/repositories/snapshots/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>cytoscape_releases</id>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
 			</releases>
 			<name>Cytoscape Releases</name>
 			<url>http://code.cytoscape.org/nexus/content/repositories/releases/</url>
-		</repository>
-	</repositories>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<!-- Dependencies needed to compile this project. -->
 	<dependencies>
@@ -113,7 +171,7 @@
 			<artifactId>org.osgi.core</artifactId>
 			<version>4.2.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
@@ -129,28 +187,28 @@
 			<artifactId>session-api</artifactId>
 			<version>3.0.0-beta4-SNAPSHOT</version>
 		</dependency>
-		 <dependency>
-		 	<groupId>org.cytoscape</groupId>
+		<dependency>
+			<groupId>org.cytoscape</groupId>
 			<artifactId>model-api</artifactId>
 			<version>3.0.0-beta4-SNAPSHOT</version>
-		 </dependency>
-		 
-		 <dependency>
-		 	<groupId>org.cytoscape</groupId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-util-api</artifactId>
 			<version>3.0.0-beta4-SNAPSHOT</version>
-		 </dependency>
-		 
-		 <dependency>
-		 	<groupId>org.cytoscape</groupId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cytoscape</groupId>
 			<artifactId>viewmodel-api</artifactId>
 			<version>3.0.0-beta4-SNAPSHOT</version>
-		 </dependency>
-		 <dependency>
-		 	<groupId>org.cytoscape</groupId>
+		</dependency>
+		<dependency>
+			<groupId>org.cytoscape</groupId>
 			<artifactId>layout-api</artifactId>
 			<version>3.0.0-beta4-SNAPSHOT</version>
-		 </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>work-api</artifactId>
@@ -163,12 +221,5 @@
 			<version>1.5.2</version>
 			<scope>provided</scope>
 		</dependency>
-
 	</dependencies>
-	
-	
-	
-	
-	
-
 </project>
